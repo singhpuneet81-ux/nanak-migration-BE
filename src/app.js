@@ -1,5 +1,4 @@
 const express = require("express");
-const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
@@ -13,19 +12,40 @@ const adminRoutes = require("./routes/admin.routes");
 const app = express();
 
 app.set("trust proxy", 1);
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
-app.use(morgan("dev"));
 
-// Allow all origins (admin FE on Vercel / custom domains)
+// CORS first — reflect any frontend origin (Vercel, custom domain, localhost)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+  }
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, x-nanak-intake-key"
+  );
+  res.setHeader("Access-Control-Max-Age", "86400");
+  res.setHeader("Vary", "Origin");
+
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+  next();
+});
+
 app.use(
-  cors({
-    origin: true,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "x-nanak-intake-key"],
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    crossOriginOpenerPolicy: false,
   })
 );
-app.options("*", cors({ origin: true, credentials: true }));
+app.use(morgan("dev"));
 
 app.use(express.json({ limit: "1mb" }));
 
