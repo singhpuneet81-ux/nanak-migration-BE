@@ -2,13 +2,14 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body || {};
+  const email = String(req.body?.email || "").trim().toLowerCase();
+  const password = String(req.body?.password || "");
   if (!email || !password) {
     return res.status(400).json({ success: false, message: "Email and password required" });
   }
-  const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
+  const user = await User.findOne({ email }).select("+password");
   if (!user || !(await user.matchPassword(password))) {
-    return res.status(401).json({ success: false, message: "Invalid credentials" });
+    return res.status(401).json({ success: false, message: "Invalid email or password" });
   }
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
   return res.json({

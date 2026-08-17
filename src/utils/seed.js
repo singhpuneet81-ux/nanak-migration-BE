@@ -52,7 +52,10 @@ async function seed() {
     admin = await User.create({ name: "Runway Admin", email, password, role: "owner" });
     console.log("Created admin:", email);
   } else {
-    console.log("Admin exists:", email);
+    admin.password = password;
+    admin.active = true;
+    await admin.save();
+    console.log("Admin password synced from SEED_ADMIN_PASSWORD:", email);
   }
 
   await TeamMember.deleteMany({});
