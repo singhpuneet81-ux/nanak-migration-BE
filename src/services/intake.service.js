@@ -10,7 +10,18 @@ const WIDGET_SOURCE_MAP = {
   newsletter: "Newsletter",
   contact: "Contact us",
   "book-consultation": "CTA banner",
+  "pathway-assessment": "Pathway assessment",
+  pathway_assessment: "Pathway assessment",
+  herosection_chatbot: "Pathway assessment",
 };
+
+const PUBLIC_WIDGETS = new Set([
+  "pathway-assessment",
+  "pathway_assessment",
+  "herosection_chatbot",
+  "newsletter",
+  "immigration_newsletter",
+]);
 
 function mapWidgetSource(widget, explicitSource) {
   if (explicitSource) return explicitSource;
@@ -24,7 +35,9 @@ async function captureIntake(body, headers = {}) {
 
   const key = headers["x-nanak-intake-key"];
   const expected = process.env.INTAKE_API_KEY;
-  if (expected && key !== expected) {
+  const widget = String(body.widget || "").toLowerCase();
+  const publicWidget = PUBLIC_WIDGETS.has(widget);
+  if (expected && key !== expected && !publicWidget) {
     const err = new Error("Invalid intake key");
     err.status = 401;
     throw err;
@@ -47,12 +60,17 @@ async function captureIntake(body, headers = {}) {
   let lead = email ? await Lead.findOne({ email }) : null;
   let created = false;
 
+  const defaultName =
+    widget === "newsletter" || widget === "immigration_newsletter"
+      ? "Newsletter subscriber"
+      : "New enquiry";
+
   if (!lead) {
     lead = await Lead.create({
-      name: leadData.name || "New enquiry",
+      name: leadData.name || defaultName,
       email,
       mobile: leadData.mobile || leadData.phone || "",
-      subclass: leadData.subclass || "",
+      subclass: leadData.subclass || body.result?.code || "",
       expiry: leadData.expiry ? new Date(leadData.expiry) : null,
       goal: leadData.goal || "",
       occupation: leadData.occupation || leadData.occ || "",
@@ -66,12 +84,13 @@ async function captureIntake(body, headers = {}) {
         wa: !!leadData.consent?.wa,
       },
       signals: [{ type: body.result ? "calc" : "gate", detail: signalDetail }],
+      notes: body.result?.summary ? [{ text: `Hero chatbot · ${body.result.summary}` }] : [],
     });
     created = true;
   } else {
     if (leadData.name) lead.name = leadData.name;
     if (leadData.mobile || leadData.phone) lead.mobile = leadData.mobile || leadData.phone;
-    if (leadData.subclass) lead.subclass = leadData.subclass;
+    if (leadData.subclass || body.result?.code) lead.subclass = leadData.subclass || body.result.code;
     if (leadData.expiry) lead.expiry = new Date(leadData.expiry);
     if (leadData.goal) lead.goal = leadData.goal;
     if (leadData.occupation || leadData.occ) lead.occupation = leadData.occupation || leadData.occ;
@@ -80,6 +99,9 @@ async function captureIntake(body, headers = {}) {
       type: body.result ? "calc" : "gate",
       detail: signalDetail,
     });
+    if (body.result?.summary) {
+      lead.notes.unshift({ text: `Hero chatbot · ${body.result.summary}` });
+    }
     await lead.save();
   }
 

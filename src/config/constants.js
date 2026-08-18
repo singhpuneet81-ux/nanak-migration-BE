@@ -7,11 +7,13 @@ const SOURCES = [
   "Contact us",
   "CTA banner",
   "Points calculator",
+  "Pathway assessment",
 ];
 
 const HEAT = {
   "Contact us": "hot",
   "CTA banner": "hot",
+  "Pathway assessment": "hot",
   "Points calculator": "warm",
   "Side blog": "warm",
   Blog: "cool",
@@ -32,6 +34,7 @@ const VISAS = {
   887: "Skilled Regional PR",
   820: "Partner (onshore)",
   801: "Partner (permanent)",
+  309: "Partner (offshore)",
   600: "Visitor",
   "": "No AU visa / offshore",
 };
