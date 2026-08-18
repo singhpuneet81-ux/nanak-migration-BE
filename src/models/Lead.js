@@ -26,6 +26,8 @@ const leadSchema = new mongoose.Schema(
     location: { type: String, default: "" },
     source: { type: String, default: "Blog", index: true },
     article: { type: String, default: "" },
+    clientId: { type: mongoose.Schema.Types.ObjectId, ref: "Client", default: null, index: true },
+    matterId: { type: mongoose.Schema.Types.ObjectId, ref: "Matter", default: null, index: true },
     status: {
       type: String,
       enum: ["new", "engaged", "consult", "won", "lost"],

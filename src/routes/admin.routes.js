@@ -3,6 +3,7 @@ const { protect } = require("../middleware/auth");
 const { asyncHandler } = require("../middleware/asyncHandler");
 const leads = require("../controllers/leads.controller");
 const bookings = require("../controllers/bookings.controller");
+const ops = require("../controllers/ops.controller");
 
 const router = express.Router();
 router.use(protect);
@@ -27,5 +28,23 @@ router.get("/bookings/:id", asyncHandler(bookings.getOne));
 router.post("/bookings", asyncHandler(bookings.create));
 router.patch("/bookings/:id", asyncHandler(bookings.update));
 router.post("/bookings/:id/oaf", asyncHandler(bookings.submitOaf));
+
+router.get("/clients", asyncHandler(ops.clients));
+router.post("/clients", asyncHandler(ops.createClient));
+router.patch("/clients/:id", asyncHandler(ops.updateClient));
+
+router.get("/matters", asyncHandler(ops.matters));
+router.post("/matters", asyncHandler(ops.createMatter));
+router.patch("/matters/:id", asyncHandler(ops.updateMatter));
+
+router.get("/documents", asyncHandler(ops.documents));
+router.post("/documents", asyncHandler(ops.createDocument));
+router.patch("/documents/:id", asyncHandler(ops.updateDocument));
+
+router.get("/compliance", asyncHandler(ops.compliance));
+router.post("/compliance", asyncHandler(ops.createCompliance));
+router.patch("/compliance/:id", asyncHandler(ops.updateCompliance));
+
+router.get("/reports", asyncHandler(ops.reports));
 
 module.exports = router;

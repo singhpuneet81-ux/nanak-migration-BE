@@ -21,6 +21,8 @@ const oafSchema = new mongoose.Schema(
 const bookingSchema = new mongoose.Schema(
   {
     leadId: { type: mongoose.Schema.Types.ObjectId, ref: "Lead", index: true },
+    clientId: { type: mongoose.Schema.Types.ObjectId, ref: "Client", default: null, index: true },
+    matterId: { type: mongoose.Schema.Types.ObjectId, ref: "Matter", default: null, index: true },
     name: { type: String, required: true },
     email: { type: String, trim: true, lowercase: true },
     mobile: { type: String, default: "" },
