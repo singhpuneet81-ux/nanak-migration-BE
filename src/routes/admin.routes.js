@@ -4,6 +4,7 @@ const { asyncHandler } = require("../middleware/asyncHandler");
 const leads = require("../controllers/leads.controller");
 const bookings = require("../controllers/bookings.controller");
 const ops = require("../controllers/ops.controller");
+const siteContent = require("../controllers/siteContent.controller");
 
 const router = express.Router();
 router.use(protect);
@@ -46,5 +47,9 @@ router.post("/compliance", asyncHandler(ops.createCompliance));
 router.patch("/compliance/:id", asyncHandler(ops.updateCompliance));
 
 router.get("/reports", asyncHandler(ops.reports));
+
+router.get("/site-content", asyncHandler(siteContent.getAdminHomepage));
+router.patch("/site-content", asyncHandler(siteContent.updateHomepage));
+router.post("/site-content/reset", asyncHandler(siteContent.resetHomepage));
 
 module.exports = router;

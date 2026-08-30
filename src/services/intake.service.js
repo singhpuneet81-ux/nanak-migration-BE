@@ -9,6 +9,8 @@ const WIDGET_SOURCE_MAP = {
   "partner-scorecard": "Side blog",
   newsletter: "Newsletter",
   immigration_newsletter: "Newsletter",
+  hero_contact_form: "Hero form",
+  hero_form: "Hero form",
   contact: "Contact us",
   "book-consultation": "CTA banner",
   "pathway-assessment": "Pathway assessment",
@@ -23,6 +25,13 @@ const PUBLIC_WIDGETS = new Set([
   "herosection_chatbot",
   "newsletter",
   "immigration_newsletter",
+  "hero_contact_form",
+  "hero_form",
+  "contact",
+  "book_consultation",
+  "book-consultation",
+  "pr_points_calculator",
+  "pr-points-calculator",
 ]);
 
 function normalizeWidget(widget) {
@@ -37,7 +46,11 @@ function isPublicEmbedIntake(body) {
   const widget = normalizeWidget(body.widget);
   if (PUBLIC_WIDGETS.has(widget)) return true;
   if (widget.includes("newsletter")) return true;
+  if (widget.includes("hero_contact") || widget.includes("hero_form")) return true;
   if (widget.includes("herosection") || widget.includes("pathway")) return true;
+  if (widget.includes("contact")) return true;
+  if (widget.includes("book_consultation") || widget.includes("book-consultation")) return true;
+  if (widget.includes("pr_points") || widget.includes("pr-points")) return true;
   return false;
 }
 

@@ -8,6 +8,7 @@ const { errorHandler } = require("./middleware/errorHandler");
 const authRoutes = require("./routes/auth.routes");
 const intakeRoutes = require("./routes/intake.routes");
 const adminRoutes = require("./routes/admin.routes");
+const publicRoutes = require("./routes/public.routes");
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/intake", intakeRoutes);
+app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.use(notFound);
