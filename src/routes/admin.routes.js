@@ -5,6 +5,10 @@ const leads = require("../controllers/leads.controller");
 const bookings = require("../controllers/bookings.controller");
 const ops = require("../controllers/ops.controller");
 const siteContent = require("../controllers/siteContent.controller");
+const blog = require("../controllers/blog.controller");
+const faq = require("../controllers/faq.controller");
+const seo = require("../controllers/seo.controller");
+const contentSync = require("../controllers/contentSync.controller");
 
 const router = express.Router();
 router.use(protect);
@@ -22,6 +26,7 @@ router.get("/leads/segments/export", asyncHandler(leads.segmentExport));
 router.get("/leads/:id", asyncHandler(leads.getOne));
 router.post("/leads", asyncHandler(leads.create));
 router.patch("/leads/:id", asyncHandler(leads.update));
+router.delete("/leads/:id", asyncHandler(leads.remove));
 
 router.get("/bookings", asyncHandler(bookings.list));
 router.get("/bookings/comms", asyncHandler(bookings.comms));
@@ -51,5 +56,25 @@ router.get("/reports", asyncHandler(ops.reports));
 router.get("/site-content", asyncHandler(siteContent.getAdminHomepage));
 router.patch("/site-content", asyncHandler(siteContent.updateHomepage));
 router.post("/site-content/reset", asyncHandler(siteContent.resetHomepage));
+
+router.get("/blogs", asyncHandler(blog.list));
+router.post("/blogs", asyncHandler(blog.create));
+router.get("/blogs/:id", asyncHandler(blog.getOne));
+router.patch("/blogs/:id", asyncHandler(blog.update));
+router.delete("/blogs/:id", asyncHandler(blog.remove));
+
+router.get("/faqs", asyncHandler(faq.list));
+router.post("/faqs", asyncHandler(faq.create));
+router.get("/faqs/:id", asyncHandler(faq.getOne));
+router.patch("/faqs/:id", asyncHandler(faq.update));
+router.delete("/faqs/:id", asyncHandler(faq.remove));
+
+router.get("/seo", asyncHandler(seo.list));
+router.post("/seo/bulk", asyncHandler(seo.bulkUpsert));
+router.get("/seo/:routeKey", asyncHandler(seo.getOne));
+router.patch("/seo/:routeKey", asyncHandler(seo.upsert));
+router.delete("/seo/:routeKey", asyncHandler(seo.remove));
+
+router.post("/content/sync-website", asyncHandler(contentSync.syncWebsite));
 
 module.exports = router;

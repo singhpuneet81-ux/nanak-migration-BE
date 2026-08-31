@@ -135,6 +135,12 @@ exports.update = async (req, res) => {
   res.json({ success: true, data: enrichLead(lead) });
 };
 
+exports.remove = async (req, res) => {
+  const lead = await Lead.findByIdAndDelete(req.params.id);
+  if (!lead) return res.status(404).json({ success: false, message: "Lead not found" });
+  res.json({ success: true, data: { ok: true } });
+};
+
 exports.exportCsv = async (req, res) => {
   const leads = await Lead.find(buildFilter(req.query)).sort({ createdAt: -1 }).lean();
   const rows = [
