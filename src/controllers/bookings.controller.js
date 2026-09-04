@@ -198,3 +198,108 @@ exports.getOne = async (req, res) => {
   if (!booking) return res.status(404).json({ success: false, message: "Booking not found" });
   res.json({ success: true, data: enrichBooking(booking) });
 };
+
+/** Public booking options — no PII, safe for unauthenticated clients. */
+exports.publicOptions = async (_req, res) => {
+  const from = new Date(Date.now() - 60 * 60 * 1000);
+  const to = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+  const taken = await Booking.find({
+    status: "confirmed",
+    at: { $gte: from, $lte: to },
+  })
+    .select("at")
+    .lean();
+
+  res.json({
+    success: true,
+    data: {
+      consultTypes: CONSULT_TYPES,
+      offices: OFFICES,
+      heard: HEARD,
+      takenSlots: taken.map((b) => new Date(b.at).toISOString()),
+    },
+  });
+};
+
+/** Public self-serve booking — same create path, with validation + honeypot. */
+exports.publicCreate = async (req, res) => {
+  const body = req.body || {};
+  if (body.company_website) {
+    return res.json({ success: true, data: { ok: true, skipped: true } });
+  }
+
+  const name = String(body.name || "").trim();
+  const email = String(body.email || "").trim().toLowerCase();
+  const mobile = String(body.mobile || "").trim();
+  const typeId = String(body.type || "").trim();
+  const atRaw = body.at;
+
+  if (!name) {
+    return res.status(400).json({ success: false, message: "Please enter your full name." });
+  }
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+  }
+  if (!typeId || !CONSULT_TYPES.some((t) => t.id === typeId)) {
+    return res.status(400).json({ success: false, message: "Please select a consultation type." });
+  }
+  if (!atRaw) {
+    return res.status(400).json({ success: false, message: "Please pick a date and time." });
+  }
+  const at = new Date(atRaw);
+  if (Number.isNaN(at.getTime()) || at.getTime() < Date.now() + 45 * 60 * 1000) {
+    return res.status(400).json({ success: false, message: "Please choose a future time slot." });
+  }
+  if (body.vevo === false || body.vevo === "false") {
+    return res.status(400).json({ success: false, message: "Please accept the VEVO consent to continue." });
+  }
+
+  const clash = await Booking.findOne({
+    status: "confirmed",
+    at: {
+      $gte: new Date(at.getTime() - 29 * 60 * 1000),
+      $lte: new Date(at.getTime() + 29 * 60 * 1000),
+    },
+  });
+  if (clash) {
+    return res.status(409).json({ success: false, message: "That time was just taken — please pick another slot." });
+  }
+
+  const t = ctype(typeId);
+  const booking = await Booking.create({
+    name,
+    email,
+    mobile,
+    type: typeId,
+    office: body.office || "Truganina",
+    mode: body.mode === "Phone" ? "Phone" : "Video",
+    at,
+    topic: String(body.topic || "").trim(),
+    heard: String(body.heard || "").trim(),
+    vevo: true,
+    oaf: { status: t.fee > 0 ? "pending" : "optional", data: null },
+    msgs: buildBookingMessages({
+      name,
+      email,
+      mobile,
+      type: typeId,
+      office: body.office || "Truganina",
+      mode: body.mode === "Phone" ? "Phone" : "Video",
+      at: at.toISOString(),
+    }),
+  });
+  await bookingToLead(booking);
+
+  res.status(201).json({
+    success: true,
+    data: {
+      id: booking._id.toString(),
+      at: booking.at,
+      type: booking.type,
+      mode: booking.mode,
+      office: booking.office,
+      consultType: t,
+      ok: true,
+    },
+  });
+};
