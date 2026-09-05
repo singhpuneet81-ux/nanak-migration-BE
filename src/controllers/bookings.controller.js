@@ -162,6 +162,15 @@ exports.submitOaf = async (req, res) => {
   const booking = await Booking.findById(req.params.id);
   if (!booking) return res.status(404).json({ success: false, message: "Booking not found" });
   const data = req.body || {};
+  const lead = await applyOafToBooking(booking, data);
+  res.json({
+    success: true,
+    data: { booking: enrichBooking(booking), lead: lead ? enrichLead(lead) : null },
+  });
+};
+
+/** Apply OAF payload onto booking + linked lead. Mutates and saves booking. */
+async function applyOafToBooking(booking, data) {
   booking.oaf = { status: "completed", data };
   await booking.save();
 
@@ -187,9 +196,129 @@ exports.submitOaf = async (req, res) => {
     }
     await lead.save();
   }
+  return lead;
+}
+
+/** Public: list pending pre-assessments for an email (no PII beyond booking meta). */
+exports.publicPendingOaf = async (req, res) => {
+  const email = String(req.query.email || "").trim().toLowerCase();
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ success: false, message: "Enter a valid email address." });
+  }
+
+  const from = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+  const bookings = await Booking.find({
+    email,
+    status: "confirmed",
+    "oaf.status": { $in: ["pending", "optional"] },
+    at: { $gte: from },
+  })
+    .sort({ at: 1 })
+    .limit(8)
+    .lean();
+
   res.json({
     success: true,
-    data: { booking: enrichBooking(booking), lead: lead ? enrichLead(lead) : null },
+    data: {
+      bookings: bookings.map((b) => ({
+        id: b._id.toString(),
+        at: b.at,
+        type: b.type,
+        mode: b.mode,
+        office: b.office,
+        name: b.name,
+        consultType: ctype(b.type),
+        oafStatus: b.oaf?.status || "pending",
+      })),
+    },
+  });
+};
+
+/**
+ * Public pre-consult assessment — attaches to an existing booking (by id + email match,
+ * or latest pending booking for that email). Shows as completed OAF on the booking in admin.
+ */
+exports.publicSubmitOaf = async (req, res) => {
+  const body = req.body || {};
+  if (body.company_website) {
+    return res.json({ success: true, data: { ok: true, skipped: true } });
+  }
+
+  const email = String(body.email || "").trim().toLowerCase();
+  const bookingId = String(body.bookingId || "").trim();
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ success: false, message: "Please enter the email used for your booking." });
+  }
+  if (!body.subclass) {
+    return res.status(400).json({ success: false, message: "Please select your current visa subclass." });
+  }
+  if (!body.refusal) {
+    return res.status(400).json({ success: false, message: "Please confirm whether you have a prior refusal." });
+  }
+  if (body.docs !== true && body.docs !== "true") {
+    return res.status(400).json({ success: false, message: "Please confirm you will bring your documents." });
+  }
+
+  let booking = null;
+  if (bookingId) {
+    booking = await Booking.findById(bookingId);
+    if (!booking || String(booking.email || "").toLowerCase() !== email) {
+      return res.status(404).json({
+        success: false,
+        message: "We could not match that booking to this email. Check the email on your confirmation.",
+      });
+    }
+  } else {
+    const from = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+    booking = await Booking.findOne({
+      email,
+      status: "confirmed",
+      "oaf.status": { $in: ["pending", "optional"] },
+      at: { $gte: from },
+    }).sort({ at: 1 });
+  }
+
+  if (!booking) {
+    return res.status(404).json({
+      success: false,
+      message: "No upcoming booking found for this email. Book a consultation first, then complete this form.",
+    });
+  }
+
+  if (booking.oaf?.status === "completed") {
+    return res.status(409).json({
+      success: false,
+      message: "This assessment is already completed for your booking.",
+    });
+  }
+
+  const data = {
+    subclass: String(body.subclass || ""),
+    expiry: String(body.expiry || ""),
+    goal: String(body.goal || ""),
+    occ: String(body.occ || ""),
+    eng: String(body.eng || ""),
+    score: String(body.score || ""),
+    family: String(body.family || "Just me"),
+    refusal: String(body.refusal || "No"),
+    refdet: String(body.refdet || ""),
+    history: String(body.history || ""),
+    docs: true,
+  };
+
+  const lead = await applyOafToBooking(booking, data);
+  const t = ctype(booking.type);
+
+  res.json({
+    success: true,
+    data: {
+      ok: true,
+      bookingId: booking._id.toString(),
+      at: booking.at,
+      consultType: t,
+      name: booking.name,
+      leadUpdated: Boolean(lead),
+    },
   });
 };
 

@@ -23,6 +23,8 @@ router.get("/seo", seo.listPublic);
 router.get("/seo/:routeKey", seo.getPublicByRouteKey);
 
 router.get("/bookings/options", asyncHandler(bookings.publicOptions));
+router.get("/bookings/pending-oaf", bookingLimiter, asyncHandler(bookings.publicPendingOaf));
 router.post("/bookings", bookingLimiter, asyncHandler(bookings.publicCreate));
+router.post("/bookings/oaf", bookingLimiter, asyncHandler(bookings.publicSubmitOaf));
 
 module.exports = router;
