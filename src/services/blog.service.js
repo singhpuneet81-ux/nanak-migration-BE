@@ -47,16 +47,8 @@ async function listPublished(query = {}) {
     const rx = new RegExp(String(query.search).trim(), "i");
     filter.$or = [{ title: rx }, { standfirst: rx }, { body: rx }];
   }
-  let blogs = await Blog.find(filter).sort({ publishedAt: -1, createdAt: -1 });
-  if (blogs.length === 0) {
-    const draftFilter = { status: "draft" };
-    if (query.category) draftFilter.category = query.category;
-    if (query.search) {
-      const rx = new RegExp(String(query.search).trim(), "i");
-      draftFilter.$or = [{ title: rx }, { standfirst: rx }, { body: rx }];
-    }
-    blogs = await Blog.find(draftFilter).sort({ publishedAt: -1, createdAt: -1 });
-  }
+  // Never fall back to drafts — unpublished posts must stay off the public site.
+  const blogs = await Blog.find(filter).sort({ publishedAt: -1, createdAt: -1 });
   return blogs.map(withId);
 }
 
