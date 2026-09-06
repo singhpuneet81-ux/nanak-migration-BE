@@ -6,6 +6,7 @@ const bookings = require("../controllers/bookings.controller");
 const ops = require("../controllers/ops.controller");
 const siteContent = require("../controllers/siteContent.controller");
 const blog = require("../controllers/blog.controller");
+const news = require("../controllers/news.controller");
 const faq = require("../controllers/faq.controller");
 const seo = require("../controllers/seo.controller");
 const contentSync = require("../controllers/contentSync.controller");
@@ -62,6 +63,12 @@ router.post("/blogs", asyncHandler(blog.create));
 router.get("/blogs/:id", asyncHandler(blog.getOne));
 router.patch("/blogs/:id", asyncHandler(blog.update));
 router.delete("/blogs/:id", asyncHandler(blog.remove));
+
+router.get("/news", asyncHandler(news.list));
+router.post("/news", asyncHandler(news.create));
+router.get("/news/:id", asyncHandler(news.getOne));
+router.patch("/news/:id", asyncHandler(news.update));
+router.delete("/news/:id", asyncHandler(news.remove));
 
 router.get("/faqs", asyncHandler(faq.list));
 router.post("/faqs", asyncHandler(faq.create));

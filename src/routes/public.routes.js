@@ -2,6 +2,7 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const siteContent = require("../controllers/siteContent.controller");
 const blog = require("../controllers/blog.controller");
+const news = require("../controllers/news.controller");
 const faq = require("../controllers/faq.controller");
 const seo = require("../controllers/seo.controller");
 const bookings = require("../controllers/bookings.controller");
@@ -15,6 +16,9 @@ router.get("/site-content", siteContent.getPublicHomepage);
 
 router.get("/blogs", blog.listPublic);
 router.get("/blogs/:slug", blog.getPublicBySlug);
+
+router.get("/news", news.listPublic);
+router.get("/news/:slug", news.getPublicBySlug);
 
 router.get("/faqs", faq.listPublic);
 router.get("/faqs/:pageKey", faq.getPublicByPageKey);
