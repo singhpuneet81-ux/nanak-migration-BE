@@ -14,6 +14,24 @@ function slugify(text) {
     .replace(/^-+|-+$/g, "");
 }
 
+/** Remove seed/layout prefix so published posts show cleanly on the public site. */
+function stripDraftPrefix(title) {
+  return String(title || "").replace(/^\[DRAFT\]\s*/i, "").trim();
+}
+
+function normalizePublishFields(data) {
+  const next = { ...data };
+  if (next.status === "published" && typeof next.title === "string") {
+    next.title = stripDraftPrefix(next.title);
+  }
+  if (typeof next.seoTitle === "string") {
+    next.seoTitle = stripDraftPrefix(next.seoTitle);
+  } else if (next.status === "published" && next.title) {
+    next.seoTitle = next.title;
+  }
+  return next;
+}
+
 async function ensureDefaults() {
   const count = await Blog.countDocuments();
   if (count > 0) return;
@@ -75,6 +93,7 @@ async function getBySlug(slug, { publishedOnly = false } = {}) {
 }
 
 async function create(data) {
+  data = normalizePublishFields(data || {});
   const slug = slugify(data.slug || data.title);
   const existing = await Blog.findOne({ slug });
   if (existing) {
@@ -91,6 +110,7 @@ async function create(data) {
 }
 
 async function update(id, data) {
+  data = normalizePublishFields(data || {});
   const blog = await Blog.findById(id);
   if (!blog) {
     const err = new Error("Blog post not found");
@@ -100,6 +120,10 @@ async function update(id, data) {
   if (data.slug) data.slug = slugify(data.slug);
   if (data.status === "published" && !blog.publishedAt) {
     data.publishedAt = data.publishedAt || new Date();
+  }
+  // If publishing without a new title in payload, still clean an existing [DRAFT] title.
+  if (data.status === "published" && data.title == null && blog.title) {
+    data.title = stripDraftPrefix(blog.title);
   }
   Object.assign(blog, data);
   await blog.save();

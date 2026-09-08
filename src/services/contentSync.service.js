@@ -18,24 +18,23 @@ async function syncBlogs() {
   let count = 0;
   for (const b of DEFAULT_BLOGS) {
     const slug = b.slug;
-    await Blog.findOneAndUpdate(
-      { slug },
-      {
-        slug,
-        title: b.title,
-        standfirst: b.standfirst,
-        body: b.body || "",
-        category: b.category,
-        tags: b.tags || [],
-        relatedRoute: b.relatedRoute || "",
-        status: "draft",
-        publishedAt: b.publishedAt || parseBlogDate(b.date),
-        author: "Nanak Migration Group",
-        seoTitle: b.title.replace("[DRAFT] ", ""),
-        seoDescription: b.standfirst,
-      },
-      { upsert: true, new: true }
-    );
+    // Only seed missing posts — never overwrite published CMS blogs back to draft.
+    const existing = await Blog.findOne({ slug });
+    if (existing) continue;
+    await Blog.create({
+      slug,
+      title: b.title,
+      standfirst: b.standfirst,
+      body: b.body || "",
+      category: b.category,
+      tags: b.tags || [],
+      relatedRoute: b.relatedRoute || "",
+      status: "draft",
+      publishedAt: b.publishedAt || parseBlogDate(b.date),
+      author: "Nanak Migration Group",
+      seoTitle: String(b.title || "").replace(/^\[DRAFT\]\s*/i, ""),
+      seoDescription: b.standfirst,
+    });
     count++;
   }
   return count;
