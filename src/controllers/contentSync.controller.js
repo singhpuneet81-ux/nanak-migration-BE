@@ -1,11 +1,17 @@
 const { asyncHandler } = require("../middleware/asyncHandler");
 const contentSync = require("../services/contentSync.service");
 
-exports.syncWebsite = asyncHandler(async (_req, res) => {
-  const data = await contentSync.syncAll();
+exports.syncWebsite = asyncHandler(async (req, res) => {
+  const restoreSeo =
+    req.body?.restoreSeo === true ||
+    req.query?.restoreSeo === "1" ||
+    req.query?.restoreSeo === "true";
+  const data = await contentSync.syncAll({ restoreSeo });
   res.json({
     success: true,
     data,
-    message: "Website content synced from migration defaults. Changes are live on the public site.",
+    message: restoreSeo
+      ? "SEO titles/descriptions restored from code defaults. CMS body/H1/hero preserved. Blogs seeded if missing."
+      : "Missing website defaults seeded only — existing Runway SEO was not overwritten.",
   });
 });

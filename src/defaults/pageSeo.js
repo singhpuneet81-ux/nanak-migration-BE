@@ -1,7 +1,7 @@
 /** Auto-synced from migration/src/data/pageMeta.ts — editable via admin Website Content. */
 module.exports = {
   "home": {
-    title: "Nanak Migration Group | Australian Migration Experts",
+    title: "Registered Migration Agents Melbourne | Nanak Migration",
     metaDescription: "Nanak Migration Group — MARA-registered agents helping skilled workers, students and families navigate Australia",
     primaryKeyword: "Australian migration agents",
     keywords: "",
@@ -10,7 +10,7 @@ module.exports = {
     heroImage: "",
   },
   "about": {
-    title: "About Nanak Migration Group | Registered Migration Agents",
+    title: "About Nanak Migration Group | MARA Registered Agents",
     metaDescription: "Meet Navpreet Aulakh (MARN 2619467) and the Nanak Migration Group team — regulated migration advice in English, Hindi and Punjabi across Australia.",
     primaryKeyword: "Nanak Migration Group about",
     keywords: "",
@@ -19,7 +19,7 @@ module.exports = {
     heroImage: "",
   },
   "book": {
-    title: "Book a Consultation | Nanak Migration Group",
+    title: "Book a Migration Consultation | Nanak Migration",
     metaDescription: "Book a consultation with a MARA-registered migration agent (MARN 2619467). Choose a time online — confirmation by email. No login required.",
     primaryKeyword: "book migration consultation Australia",
     keywords: "",
@@ -28,7 +28,7 @@ module.exports = {
     heroImage: "",
   },
   "book-consultation": {
-    title: "Book a Consultation | Nanak Migration Group",
+    title: "Book a Migration Consultation | Nanak Migration",
     metaDescription: "Book a consultation with a MARA-registered migration agent (MARN 2619467) about your Australian visa pathway. Skilled, employer, student and family visas.",
     primaryKeyword: "book migration consultation Australia",
     keywords: "",
@@ -46,7 +46,7 @@ module.exports = {
     heroImage: "",
   },
   "contact": {
-    title: "Contact Nanak Migration Group | Truganina, Geelong, Cranbourne, Canning Vale, Craigieburn",
+    title: "Contact a Registered Migration Agent | Nanak Migration",
     metaDescription: "Contact Nanak Migration Group — phone 1300 644 728 or email visa@nanakmigration.com.au. Offices in Truganina, Geelong, Cranbourne, Canning Vale and Craigieburn. MARN 2619467.",
     primaryKeyword: "contact migration agent Australia",
     keywords: "",
@@ -82,7 +82,7 @@ module.exports = {
     heroImage: "",
   },
   "employer-sponsored-visas": {
-    title: "Employer Sponsored Visas | Nanak Migration Group",
+    title: "Employer Sponsored Visas - 482 & 186 | Nanak Migration",
     metaDescription: "Australian employer-sponsored visas — subclass 482 Skills in Demand, subclass 186 permanent residence, subclass 494 regional. Agent MARN 2619467.",
     primaryKeyword: "employer sponsored visas Australia",
     keywords: "",
@@ -91,7 +91,7 @@ module.exports = {
     heroImage: "",
   },
   "employer-nomination-scheme": {
-    title: "Employer Nomination Scheme (186) | Nanak Migration Group",
+    title: "186 Visa - Employer Nomination Scheme | Nanak Migration",
     metaDescription: "The subclass 186 visa grants permanent residence via employer nomination. Registered agent MARN 2619467 explains eligibility, streams and requirements.",
     primaryKeyword: "employer nomination scheme 186 visa",
     keywords: "",
@@ -100,7 +100,7 @@ module.exports = {
     heroImage: "",
   },
   "186-skill-requirements": {
-    title: "186 Visa Skill Requirements | Nanak Migration Group",
+    title: "186 Visa Skill & Work Requirements 2026 | Nanak Migration",
     metaDescription: "Skills assessment, work experience and English requirements for the subclass 186 Employer Nomination Scheme visa in Australia. MARN 2619467.",
     primaryKeyword: "186 visa skill requirements",
     keywords: "",
@@ -109,7 +109,7 @@ module.exports = {
     heroImage: "",
   },
   "186-occupations-list": {
-    title: "186 Visa Occupations List | Nanak Migration Group",
+    title: "186 Visa Occupation List 2026 - Check Your ANZSCO | Nanak",
     metaDescription: "Occupations eligible for the subclass 186 Employer Nomination Scheme via the CSOL and MLTSSL. Search by ANZSCO code. Registered agent MARN 2619467.",
     primaryKeyword: "186 visa occupations list",
     keywords: "",
@@ -118,7 +118,7 @@ module.exports = {
     heroImage: "",
   },
   "skills-in-demand-visa": {
-    title: "Skills in Demand Visa (482) | Nanak Migration Group",
+    title: "482 Visa - Skills in Demand (SID) | Nanak Migration",
     metaDescription: "The subclass 482 Skills in Demand visa lets employers sponsor skilled workers for up to 4 years. Streams: Core Skills, Specialist, Essential. MARN 2619467.",
     primaryKeyword: "skills in demand visa 482",
     keywords: "",
@@ -145,7 +145,7 @@ module.exports = {
     heroImage: "",
   },
   "482-to-pr-pathway": {
-    title: "482 to PR Pathway — 186 TRT Stream | Nanak Migration Group",
+    title: "482 to PR - Your Pathway to Residence | Nanak Migration",
     metaDescription: "Transition from the subclass 482 to permanent residence via the subclass 186 TRT stream. Generally requires 2 years with the same employer. MARN 2619467.",
     primaryKeyword: "482 visa to permanent residence pathway",
     keywords: "",
@@ -154,7 +154,7 @@ module.exports = {
     heroImage: "",
   },
   "standard-business-sponsorship": {
-    title: "Standard Business Sponsorship (SBS) | Nanak Migration Group",
+    title: "Standard Business Sponsorship (SBS) 2026 Guide | Nanak",
     metaDescription: "Australian businesses must hold Standard Business Sponsorship before nominating workers on a subclass 482 visa. Approval takes 4–8 weeks. MARN 2619467.",
     primaryKeyword: "standard business sponsorship Australia",
     keywords: "",
@@ -163,7 +163,7 @@ module.exports = {
     heroImage: "",
   },
   "core-skills-occupation-list": {
-    title: "Core Skills Occupation List (CSOL) | Nanak Migration Group",
+    title: "Core Skills Occupation List (CSOL) 2026 - 482 Visa | Nanak",
     metaDescription: "The Core Skills Occupation List (CSOL) determines occupations eligible for the subclass 482 Core Skills stream. Search by ANZSCO code. MARN 2619467.",
     primaryKeyword: "core skills occupation list CSOL 482",
     keywords: "",
@@ -271,7 +271,7 @@ module.exports = {
     heroImage: "",
   },
   "skilled-migration": {
-    title: "Skilled Migration to Australia | Nanak Migration Group",
+    title: "Skilled Migration Australia - 189/190/491 | Nanak Migration",
     metaDescription: "Skilled migration to Australia via SkillSelect — subclass 189, 190 and 491 points-tested visas explained. Registered migration agent MARN 2619467.",
     primaryKeyword: "skilled migration Australia",
     keywords: "",
@@ -280,7 +280,7 @@ module.exports = {
     heroImage: "",
   },
   "skilled-independent-189": {
-    title: "Skilled Independent Visa (189) | Nanak Migration Group",
+    title: "189 Visa - Skilled Independent (PR) | Nanak Migration",
     metaDescription: "The subclass 189 Skilled Independent visa grants permanent Australian residence without a sponsor. Points-tested via SkillSelect. Agent MARN 2619467.",
     primaryKeyword: "skilled independent visa 189",
     keywords: "",
@@ -289,7 +289,7 @@ module.exports = {
     heroImage: "",
   },
   "skilled-nominated-190": {
-    title: "Skilled Nominated Visa (190) | Nanak Migration Group",
+    title: "190 Visa - Skilled Nominated (PR) | Nanak Migration",
     metaDescription: "The subclass 190 Skilled Nominated visa grants permanent residence via state or territory nomination. Adds 5 points to your EOI score. MARN 2619467.",
     primaryKeyword: "skilled nominated visa 190",
     keywords: "",
@@ -298,7 +298,7 @@ module.exports = {
     heroImage: "",
   },
   "skilled-work-regional-491": {
-    title: "Skilled Work Regional Visa (491) | Nanak Migration Group",
+    title: "491 Visa - Skilled Work Regional | Nanak Migration",
     metaDescription: "The subclass 491 Skilled Work Regional visa requires regional living and adds 15 points. Pathway to permanent residence via subclass 191. MARN 2619467.",
     primaryKeyword: "skilled work regional visa 491",
     keywords: "",
@@ -307,7 +307,7 @@ module.exports = {
     heroImage: "",
   },
   "temporary-graduate-485": {
-    title: "Temporary Graduate Visa (485) | Nanak Migration Group",
+    title: "485 Visa - Temporary Graduate Visa Guide | Nanak Migration",
     metaDescription: "The subclass 485 Temporary Graduate visa lets graduates work in Australia after study. Streams: Post-Higher Education Work and Graduate Work. MARN 2619467.",
     primaryKeyword: "temporary graduate visa 485",
     keywords: "",
@@ -316,7 +316,7 @@ module.exports = {
     heroImage: "",
   },
   "points-test": {
-    title: "Australian Points Test Explained | Nanak Migration Group",
+    title: "Points Test Calculator & Guide 2026 | Nanak Migration",
     metaDescription: "How the Australian points test works for subclass 189, 190 and 491 visas. Minimum 65 points required for EOI. Calculator included. MARN 2619467.",
     primaryKeyword: "Australian skilled migration points test",
     keywords: "",
@@ -325,7 +325,7 @@ module.exports = {
     heroImage: "",
   },
   "skills-assessment": {
-    title: "Skills Assessment for Australian Visas | Nanak Migration",
+    title: "Skills Assessment Australia - Full Guide | Nanak Migration",
     metaDescription: "Skills assessment is required for Australian skilled and employer-sponsored visas. Guide to assessing authorities, evidence and timelines. MARN 2619467.",
     primaryKeyword: "skills assessment Australia visa",
     keywords: "",
@@ -334,7 +334,7 @@ module.exports = {
     heroImage: "",
   },
   "state-nomination": {
-    title: "State Nomination Requirements | Nanak Migration Group",
+    title: "State Nomination for 190 & 491 Visas | Nanak Migration",
     metaDescription: "State and territory nomination for the subclass 190 and 491 visas — each state sets its own occupation lists and criteria. Registered agent MARN 2619467.",
     primaryKeyword: "state nomination 190 491 visa requirements",
     keywords: "",
@@ -343,7 +343,7 @@ module.exports = {
     heroImage: "",
   },
   "english-requirements": {
-    title: "English Requirements for Australian Visas | Nanak Migration",
+    title: "English Requirements - IELTS & PTE Scores | Nanak Migration",
     metaDescription: "English proficiency levels and approved test scores for Australian skilled and employer-sponsored visas, including subclass 482 and 186. MARN 2619467.",
     primaryKeyword: "English requirements Australian visa IELTS PTE",
     keywords: "",
@@ -352,7 +352,7 @@ module.exports = {
     heroImage: "",
   },
   "student-visas": {
-    title: "Australian Student Visas | Nanak Migration Group",
+    title: "Student Visa Australia - Guide & Pathways | Nanak Migration",
     metaDescription: "The subclass 500 Student visa and pathways to Australian permanent residence for international students. Registered migration agent MARN 2619467.",
     primaryKeyword: "Australian student visa",
     keywords: "",
@@ -361,7 +361,7 @@ module.exports = {
     heroImage: "",
   },
   "student-visa-500": {
-    title: "Student Visa (Subclass 500) | Nanak Migration Group",
+    title: "Student Visa 500 - Requirements & Costs | Nanak Migration",
     metaDescription: "The subclass 500 Student visa allows full-time study at a CRICOS-registered Australian institution with 48 hours per fortnight work rights. MARN 2619467.",
     primaryKeyword: "student visa subclass 500 Australia",
     keywords: "",
@@ -370,7 +370,7 @@ module.exports = {
     heroImage: "",
   },
   "genuine-student-requirement": {
-    title: "Genuine Student Requirement (GSR) | Nanak Migration Group",
+    title: "Genuine Student Requirement (GSR) 2026 Guide | Nanak",
     metaDescription: "The Genuine Student requirement replaced the GTE for the subclass 500 student visa in March 2024. How to demonstrate genuine study intent. MARN 2619467.",
     primaryKeyword: "genuine student requirement subclass 500",
     keywords: "",
@@ -379,7 +379,7 @@ module.exports = {
     heroImage: "",
   },
   "student-to-pr-pathway": {
-    title: "Student to PR Pathway in Australia | Nanak Migration Group",
+    title: "Student to PR - Pathways After Study | Nanak Migration",
     metaDescription: "How international students can transition to permanent residence via subclass 485, 189, 190 or employer-sponsored pathways. Registered agent MARN 2619467.",
     primaryKeyword: "student visa to permanent residence Australia",
     keywords: "",
@@ -415,7 +415,7 @@ module.exports = {
     heroImage: "",
   },
   "partner-family-visas": {
-    title: "Partner & Family Visas Australia | Nanak Migration Group",
+    title: "Partner Visa Australia - 820, 309 & 300 | Nanak Migration",
     metaDescription: "Australian partner and family visas — onshore subclass 820/801, offshore 309/100, and prospective marriage subclass 300. Registered agent MARN 2619467.",
     primaryKeyword: "partner visa Australia",
     keywords: "",
@@ -424,7 +424,7 @@ module.exports = {
     heroImage: "",
   },
   "parent-visas": {
-    title: "Parent Visas Australia — All Pathways | Nanak Migration Group",
+    title: "Parent Visa Australia - All Pathways | Nanak Migration",
     metaDescription: "Parent visa pathways to Australia — subclass 143, 173, 103, 804, 864 and 870 explained. Costs, queues and Balance of Family test. Registered agent MARN 2619467.",
     primaryKeyword: "parent visa Australia",
     keywords: "",
@@ -469,7 +469,7 @@ module.exports = {
     heroImage: "",
   },
   "partner-visa-820-801": {
-    title: "Partner Visa Onshore (820/801) | Nanak Migration Group",
+    title: "820/801 Partner Visa - Onshore Guide | Nanak Migration",
     metaDescription: "The subclass 820/801 onshore partner visa is a two-stage visa for applicants in Australia in a genuine de facto or married relationship. MARN 2619467.",
     primaryKeyword: "partner visa onshore 820 801 Australia",
     keywords: "",
@@ -478,7 +478,7 @@ module.exports = {
     heroImage: "",
   },
   "partner-visa-309-100": {
-    title: "Partner Visa Offshore (309/100) | Nanak Migration Group",
+    title: "309/100 Partner Visa - Offshore Guide | Nanak Migration",
     metaDescription: "The subclass 309/100 offshore partner visa is for applicants outside Australia in a genuine relationship with an Australian citizen or PR. MARN 2619467.",
     primaryKeyword: "partner visa offshore 309 100 Australia",
     keywords: "",
@@ -487,7 +487,7 @@ module.exports = {
     heroImage: "",
   },
   "prospective-marriage-300": {
-    title: "Prospective Marriage Visa (300) | Nanak Migration Group",
+    title: "300 Visa - Prospective Marriage Guide | Nanak Migration",
     metaDescription: "The subclass 300 Prospective Marriage visa allows entry to Australia to marry your partner within 9 months, then apply for a partner visa. MARN 2619467.",
     primaryKeyword: "prospective marriage visa subclass 300",
     keywords: "",
@@ -496,7 +496,7 @@ module.exports = {
     heroImage: "",
   },
   "partner-visa-evidence": {
-    title: "Partner Visa Evidence Guide | Nanak Migration Group",
+    title: "Partner Visa Evidence - What to Include | Nanak Migration",
     metaDescription: "Evidence required for an Australian partner visa (subclass 820/801 or 309/100) across financial, household, social and commitment categories. MARN 2619467.",
     primaryKeyword: "partner visa evidence requirements Australia",
     keywords: "",
@@ -505,7 +505,7 @@ module.exports = {
     heroImage: "",
   },
   "bridging-visas": {
-    title: "Bridging Visas Explained | Nanak Migration Group",
+    title: "Bridging Visa Australia - A, B, C & E | Nanak Migration",
     metaDescription: "Bridging Visa A (BVA), B (BVB) and E (BVE) allow lawful stay in Australia while a substantive visa is processed. Nanak Migration Group MARN 2619467.",
     primaryKeyword: "bridging visa Australia BVA BVB BVE",
     keywords: "",
@@ -514,7 +514,7 @@ module.exports = {
     heroImage: "",
   },
   "australian-citizenship": {
-    title: "Australian Citizenship by Conferral | Nanak Migration Group",
+    title: "Australian Citizenship Application Guide | Nanak Migration",
     metaDescription: "Australian citizenship by conferral requires 4 years of lawful residence including 12 months as a permanent resident. Registered agent MARN 2619467.",
     primaryKeyword: "Australian citizenship by conferral requirements",
     keywords: "",
@@ -523,7 +523,7 @@ module.exports = {
     heroImage: "",
   },
   "visa-refusal-review": {
-    title: "Visa Refusal & Review Options | Nanak Migration Group",
+    title: "Visa Refusal Appeal Australia - Options | Nanak Migration",
     metaDescription: "Australian visa refusal and cancellation — review rights, ART deadlines and merits review options. Nanak Migration Group, registered agent MARN 2619467.",
     primaryKeyword: "Australian visa refusal review appeal",
     keywords: "",
@@ -532,7 +532,7 @@ module.exports = {
     heroImage: "",
   },
   "art-review": {
-    title: "ART Review — Administrative Review Tribunal | Nanak",
+    title: "ART Review for Visa Refusals - Deadlines & Process | Nanak",
     metaDescription: "The Administrative Review Tribunal (ART) reviews visa refusal and cancellation decisions. A 21-day lodgement deadline generally applies. MARN 2619467.",
     primaryKeyword: "Administrative Review Tribunal ART visa review Australia",
     keywords: "",
@@ -559,7 +559,7 @@ module.exports = {
     heroImage: "",
   },
   "resources": {
-    title: "Visa Guides, Blogs & Checklists | Nanak Migration Group",
+    title: "Visa Guides, Checklists & Free Tools | Nanak Migration",
     metaDescription: "Free Australian visa guides, articles and checklists written by MARA-registered agents. Browse all 30 visa guides, blog updates and evidence checklists.",
     primaryKeyword: "australian visa guides checklists",
     keywords: "",
@@ -568,7 +568,7 @@ module.exports = {
     heroImage: "",
   },
   "guides": {
-    title: "Visa Guides — 30 Australian Visa Topics | Nanak Migration",
+    title: "Australian Visa Guides - 30+ Free Guides | Nanak Migration",
     metaDescription: "Browse all 30 Australian visa guides written by MARA-registered agents. Filterable by category — employer, skilled, student, partner, visitor and reviews.",
     primaryKeyword: "australian visa guides",
     keywords: "",
@@ -577,7 +577,7 @@ module.exports = {
     heroImage: "",
   },
   "blog": {
-    title: "Migration Blog — Policy & Visa News | Nanak Migration Group",
+    title: "Australian Immigration News & Visa Updates | Nanak Migration",
     metaDescription: "Australian immigration news, policy updates and visa guidance from MARA-registered migration agents at Nanak Migration Group.",
     primaryKeyword: "australian immigration news",
     keywords: "",
@@ -586,7 +586,7 @@ module.exports = {
     heroImage: "",
   },
   "checklists": {
-    title: "Visa Document Checklists | Nanak Migration Group",
+    title: "Australian Visa Document Checklists (Free) | Nanak",
     metaDescription: "Free Australian visa document checklists for partner, 186, student, points test, citizenship and 482-to-PR applications. General guidance only.",
     primaryKeyword: "australian visa checklist",
     keywords: "",
@@ -595,9 +595,54 @@ module.exports = {
     heroImage: "",
   },
   "tools": {
-    title: "Migration Tools — Free Visa Calculators | Nanak Migration",
+    title: "Free Visa Calculators & Tools | Nanak Migration",
     metaDescription: "Free migration tools: points calculator, occupation search, residence calculator, English score converter and visa pathway comparison. Indicative only.",
     primaryKeyword: "australian visa calculator",
+    keywords: "",
+    h1: "",
+    body: "",
+    heroImage: "",
+  },
+  "tools/points-calculator": {
+    title: "Points Calculator | Nanak Migration Tools",
+    metaDescription: "Estimate skilled migration points for subclasses 189, 190 and 491. Indicative only — not migration advice. MARN 2619467.",
+    primaryKeyword: "australia skilled visa points calculator",
+    keywords: "",
+    h1: "",
+    body: "",
+    heroImage: "",
+  },
+  "tools/occupation-search": {
+    title: "Occupation Search | Nanak Migration Tools",
+    metaDescription: "Search ANZSCO occupations and skills assessment authorities for Australian visas. Indicative only. MARN 2619467.",
+    primaryKeyword: "ANZSCO occupation search Australia",
+    keywords: "",
+    h1: "",
+    body: "",
+    heroImage: "",
+  },
+  "tools/residence-calculator": {
+    title: "Residence Calculator | Nanak Migration Tools",
+    metaDescription: "Check lawful residence for Australian citizenship. Indicative only — not migration advice. MARN 2619467.",
+    primaryKeyword: "australian citizenship residence calculator",
+    keywords: "",
+    h1: "",
+    body: "",
+    heroImage: "",
+  },
+  "tools/english-score-converter": {
+    title: "English Score Converter | Nanak Migration Tools",
+    metaDescription: "Convert IELTS, PTE, TOEFL and OET scores to Australian visa English levels. Indicative only. MARN 2619467.",
+    primaryKeyword: "IELTS PTE visa english converter",
+    keywords: "",
+    h1: "",
+    body: "",
+    heroImage: "",
+  },
+  "tools/visa-pathway-comparison": {
+    title: "Visa Pathway Comparison | Nanak Migration Tools",
+    metaDescription: "Compare Australian visa subclasses side by side. Indicative only — not migration advice. MARN 2619467.",
+    primaryKeyword: "compare australian visa pathways",
     keywords: "",
     h1: "",
     body: "",
@@ -649,7 +694,7 @@ module.exports = {
     heroImage: "",
   },
   "visitor-visas": {
-    title: "Visitor Visas Hub — eVisitor, ETA & Subclass 600 | Nanak Migration Group",
+    title: "Visitor Visa Australia - 600, ETA, eVisitor | Nanak",
     metaDescription: "Australian visitor visas compared — eVisitor (651), ETA (601) and Visitor visa (subclass 600). Choose the right option for your passport and stay. Registered migration agent MARN 2619467.",
     primaryKeyword: "visitor visa Australia",
     keywords: "",
@@ -1003,6 +1048,15 @@ module.exports = {
     title: "New Zealand Citizen Family Relationship Visa Subclass 461 | Nanak Migration Group",
     metaDescription: "Subclass 461 NZ Citizen Family Relationship visa: 5-year temporary visa for family members (not NZ citizens) of a New Zealand citizen on a subclass 444 Special Category visa in Australia. Full work and study rights. Renewable onshore. MARN 2619467.",
     primaryKeyword: "NZ citizen family relationship visa subclass 461 Australia",
+    keywords: "",
+    h1: "",
+    body: "",
+    heroImage: "",
+  },
+  "site-map": {
+    title: "Sitemap | All Nanak Migration Pages",
+    metaDescription: "Complete HTML sitemap of Nanak Migration Group visa guides, hubs, tools, blog and news — every public page linked for visitors and search engines.",
+    primaryKeyword: "Nanak Migration sitemap",
     keywords: "",
     h1: "",
     body: "",

@@ -53,10 +53,48 @@ async function syncFaqs() {
   return count;
 }
 
+/**
+ * Seed missing SEO rows only. Never overwrite Runway-edited titles/descriptions —
+ * a prior blind upsert wiped approved meta on 41 pages.
+ */
 async function syncSeo() {
   let count = 0;
   for (const [routeKey, meta] of Object.entries(DEFAULT_SEO)) {
-    await PageSeo.findOneAndUpdate({ routeKey }, { routeKey, ...meta }, { upsert: true, new: true });
+    const existing = await PageSeo.findOne({ routeKey });
+    if (existing) continue;
+    await PageSeo.create({ routeKey, ...meta, ogTitle: meta.title, ogDescription: meta.metaDescription });
+    count++;
+  }
+  return count;
+}
+
+/**
+ * Force-restore title / description / keywords / og* from code defaults.
+ * Preserves CMS body / h1 / heroImage. Use after a bad "Sync from website".
+ */
+async function restoreSeoFromDefaults() {
+  let count = 0;
+  for (const [routeKey, meta] of Object.entries(DEFAULT_SEO)) {
+    await PageSeo.findOneAndUpdate(
+      { routeKey },
+      {
+        $set: {
+          title: meta.title,
+          metaDescription: meta.metaDescription,
+          primaryKeyword: meta.primaryKeyword || "",
+          keywords: meta.keywords || "",
+          ogTitle: meta.title,
+          ogDescription: meta.metaDescription,
+        },
+        $setOnInsert: {
+          routeKey,
+          h1: meta.h1 || "",
+          body: meta.body || "",
+          heroImage: meta.heroImage || "",
+        },
+      },
+      { upsert: true, new: true }
+    );
     count++;
   }
   return count;
@@ -80,14 +118,21 @@ async function syncHomepage() {
   return "updated";
 }
 
-async function syncAll() {
+async function syncAll({ restoreSeo = false } = {}) {
   const [blogs, faqs, seoPages, homepage] = await Promise.all([
     syncBlogs(),
     syncFaqs(),
-    syncSeo(),
+    restoreSeo ? restoreSeoFromDefaults() : syncSeo(),
     syncHomepage(),
   ]);
-  return { blogs, faqs, seoPages, homepage };
+  return { blogs, faqs, seoPages, homepage, seoMode: restoreSeo ? "restored" : "seed-missing" };
 }
 
-module.exports = { syncAll, syncBlogs, syncFaqs, syncSeo, syncHomepage };
+module.exports = {
+  syncAll,
+  syncBlogs,
+  syncFaqs,
+  syncSeo,
+  restoreSeoFromDefaults,
+  syncHomepage,
+};

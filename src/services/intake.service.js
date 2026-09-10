@@ -1,5 +1,6 @@
 const Lead = require("../models/Lead");
 const { enrichLead, resolveOwnerForConsult, applyRmaRule } = require("./runway.service");
+const { verifyTurnstileToken } = require("../utils/turnstile");
 
 const WIDGET_SOURCE_MAP = {
   "visa-expiry-checker": "CTA banner",
@@ -60,16 +61,26 @@ function mapWidgetSource(widget, explicitSource) {
   return WIDGET_SOURCE_MAP[w] || WIDGET_SOURCE_MAP[w.replace(/_/g, "-")] || "Blog";
 }
 
-async function captureIntake(body, headers = {}) {
+async function captureIntake(body, headers = {}, meta = {}) {
   const honeypot = body?.company_website || body?.lead?.company_website;
   if (honeypot) return { ok: true, skipped: true };
+
+  const widget = normalizeWidget(body.widget);
+  const needsCaptcha =
+    widget === "newsletter" ||
+    widget === "immigration_newsletter" ||
+    widget === "contact" ||
+    widget.includes("newsletter") ||
+    widget.includes("contact");
+  if (needsCaptcha) {
+    await verifyTurnstileToken(body.turnstileToken || body["cf-turnstile-response"], meta.ip);
+  }
 
   const key =
     headers["x-nanak-intake-key"] ||
     headers["X-Nanak-Intake-Key"] ||
     "";
   const expected = process.env.INTAKE_API_KEY;
-  const widget = normalizeWidget(body.widget);
   const publicWidget = isPublicEmbedIntake(body);
   if (expected && key !== expected && !publicWidget) {
     const err = new Error("Invalid intake key");
@@ -79,6 +90,11 @@ async function captureIntake(body, headers = {}) {
 
   const leadData = body.lead || body;
   const email = (leadData.email || "").trim().toLowerCase();
+  if (needsCaptcha && widget.includes("contact") && !email) {
+    const err = new Error("Email is required");
+    err.status = 400;
+    throw err;
+  }
   if (!email && !leadData.mobile) {
     const err = new Error("Email or mobile required");
     err.status = 400;
