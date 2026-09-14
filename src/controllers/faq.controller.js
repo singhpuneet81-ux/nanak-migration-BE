@@ -26,6 +26,16 @@ exports.remove = asyncHandler(async (req, res) => {
   res.json({ success: true, data: { ok: true } });
 });
 
+exports.seedMissing = asyncHandler(async (_req, res) => {
+  const data = await faq.seedMissingDefaults();
+  res.json({ success: true, data });
+});
+
+exports.upsertByPageKey = asyncHandler(async (req, res) => {
+  const data = await faq.upsertByPageKey(req.params.pageKey, req.body || {});
+  res.json({ success: true, data });
+});
+
 exports.getPublicByPageKey = asyncHandler(async (req, res) => {
   const data = await faq.getByPageKey(req.params.pageKey, { publishedOnly: true });
   res.json({ success: true, data });

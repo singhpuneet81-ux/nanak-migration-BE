@@ -1,5 +1,4 @@
 const Blog = require("../models/Blog");
-const FaqCollection = require("../models/FaqCollection");
 const PageSeo = require("../models/PageSeo");
 const SiteContent = require("../models/SiteContent");
 const DEFAULT_BLOGS = require("../defaults/blogPosts");
@@ -41,16 +40,10 @@ async function syncBlogs() {
 }
 
 async function syncFaqs() {
-  let count = 0;
-  for (const col of DEFAULT_FAQS) {
-    await FaqCollection.findOneAndUpdate(
-      { pageKey: col.pageKey },
-      col,
-      { upsert: true, new: true }
-    );
-    count++;
-  }
-  return count;
+  // Seed missing page FAQ collections only — never overwrite Runway edits.
+  const faqService = require("./faq.service");
+  const result = await faqService.seedMissingDefaults();
+  return result.inserted;
 }
 
 /**

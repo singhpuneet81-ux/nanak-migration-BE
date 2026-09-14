@@ -72,6 +72,8 @@ router.delete("/news/:id", asyncHandler(news.remove));
 
 router.get("/faqs", asyncHandler(faq.list));
 router.post("/faqs", asyncHandler(faq.create));
+router.post("/faqs/seed-missing", asyncHandler(faq.seedMissing));
+router.put("/faqs/by-key/:pageKey", asyncHandler(faq.upsertByPageKey));
 router.get("/faqs/:id", asyncHandler(faq.getOne));
 router.patch("/faqs/:id", asyncHandler(faq.update));
 router.delete("/faqs/:id", asyncHandler(faq.remove));
