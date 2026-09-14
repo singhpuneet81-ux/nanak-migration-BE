@@ -28,10 +28,12 @@ exports.remove = asyncHandler(async (req, res) => {
 
 exports.getPublicByRouteKey = asyncHandler(async (req, res) => {
   const data = await seo.getByRouteKey(req.params.routeKey);
-  res.json({ success: true, data });
+  res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+  res.json({ success: true, data: seo.toPublicSeo(data) });
 });
 
 exports.listPublic = asyncHandler(async (_req, res) => {
   const pages = await seo.listAll();
-  res.json({ success: true, data: { pages } });
+  res.setHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
+  res.json({ success: true, data: { pages: pages.map(seo.toPublicSeo) } });
 });

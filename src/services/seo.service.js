@@ -80,11 +80,48 @@ function pickPayload(data = {}) {
 }
 
 async function healStaleSyncedTitles() {
-  const { restoreSeoFromDefaults } = require("./contentSync.service");
   const stale = await PageSeo.countDocuments({ title: { $in: [...STALE_SYNCED_TITLES] } });
-  if (stale > 0) {
+  let partial = 0;
+  if (!stale) {
+    // Titles already restored but descriptions/keywords still pre-overhaul — finish the job.
+    for (const [routeKey, meta] of Object.entries(DEFAULT_SEO)) {
+      const doc = await PageSeo.findOne({ routeKey })
+        .select("title metaDescription primaryKeyword ogDescription")
+        .lean();
+      if (!doc) continue;
+      if (doc.title !== meta.title) continue;
+      if (
+        doc.metaDescription !== meta.metaDescription ||
+        (doc.primaryKeyword || "") !== (meta.primaryKeyword || "") ||
+        (doc.ogDescription || "") !== meta.metaDescription
+      ) {
+        partial++;
+        break;
+      }
+    }
+  }
+  if (stale > 0 || partial > 0) {
+    const { restoreSeoFromDefaults } = require("./contentSync.service");
     await restoreSeoFromDefaults();
   }
+}
+
+function toPublicSeo(doc) {
+  const x = withId(doc);
+  return {
+    id: x.id,
+    routeKey: x.routeKey,
+    title: x.title,
+    metaDescription: x.metaDescription,
+    h1: x.h1,
+    body: x.body,
+    heroImage: x.heroImage,
+    canonicalUrl: x.canonicalUrl,
+    ogTitle: x.ogTitle,
+    ogDescription: x.ogDescription,
+    ogImage: x.ogImage,
+    robotsIndex: x.robotsIndex !== false,
+  };
 }
 
 /** Seed missing route keys from defaults (safe for existing DBs). */
@@ -165,4 +202,5 @@ module.exports = {
   upsert,
   bulkUpsert,
   remove,
+  toPublicSeo,
 };
