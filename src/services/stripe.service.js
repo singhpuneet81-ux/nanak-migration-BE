@@ -1,9 +1,21 @@
-const Stripe = require("stripe");
+let Stripe = null;
+try {
+  Stripe = require("stripe");
+} catch {
+  Stripe = null;
+}
 
 let stripeClient = null;
 
 function getStripe() {
   const key = process.env.STRIPE_SECRET_KEY;
+  if (!Stripe) {
+    const err = new Error(
+      "Stripe package is not installed on the server. Run npm install stripe and redeploy."
+    );
+    err.status = 503;
+    throw err;
+  }
   if (!key) {
     const err = new Error("Stripe is not configured (missing STRIPE_SECRET_KEY)");
     err.status = 503;
@@ -56,7 +68,8 @@ async function createConsultCheckoutSession({
           unit_amount: amountCents,
           product_data: {
             name: consultName || "Migration consultation",
-            description: "Consultation fee — credited if you engage Nanak Migration Group (MARN 2619467).",
+            description:
+              "Consultation fee — credited if you engage Nanak Migration Group (MARN 2619467).",
           },
         },
       },
