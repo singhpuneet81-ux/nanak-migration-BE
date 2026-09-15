@@ -307,6 +307,10 @@ exports.reports = async (_req, res) => {
       clients: clients.length,
       openMatters: openMatters.length,
       pendingCompliance: checks.filter((c) => c.overallStatus === "pending").length,
+      paidConsults: bookings.filter((b) => b.payment?.status === "paid").length,
+      paymentRevenueCents: bookings
+        .filter((b) => b.payment?.status === "paid")
+        .reduce((s, b) => s + (b.payment?.amountCents || 0), 0),
     },
     funnel: {
       newLeads: leads.filter((l) => l.status === "new").length,
@@ -319,6 +323,13 @@ exports.reports = async (_req, res) => {
       confirmed: bookings.filter((b) => b.status === "confirmed").length,
       completed: bookings.filter((b) => b.status === "completed").length,
       noShow: bookings.filter((b) => b.status === "no-show").length,
+    },
+    payments: {
+      paidCount: bookings.filter((b) => b.payment?.status === "paid").length,
+      pendingCount: bookings.filter((b) => b.status === "pending_payment").length,
+      totalCents: bookings
+        .filter((b) => b.payment?.status === "paid")
+        .reduce((s, b) => s + (b.payment?.amountCents || 0), 0),
     },
     documents: {
       total: documents.length,

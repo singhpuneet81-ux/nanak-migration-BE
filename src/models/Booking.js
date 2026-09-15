@@ -18,6 +18,22 @@ const oafSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const paymentSchema = new mongoose.Schema(
+  {
+    status: {
+      type: String,
+      enum: ["not_required", "pending", "paid", "failed", "cancelled"],
+      default: "not_required",
+    },
+    amountCents: { type: Number, default: 0 },
+    currency: { type: String, default: "aud" },
+    stripeSessionId: { type: String, default: "" },
+    stripePaymentIntentId: { type: String, default: "" },
+    paidAt: { type: Date, default: null },
+  },
+  { _id: false }
+);
+
 const bookingSchema = new mongoose.Schema(
   {
     leadId: { type: mongoose.Schema.Types.ObjectId, ref: "Lead", index: true },
@@ -32,7 +48,7 @@ const bookingSchema = new mongoose.Schema(
     at: { type: Date, required: true, index: true },
     status: {
       type: String,
-      enum: ["confirmed", "completed", "no-show", "cancelled"],
+      enum: ["pending_payment", "confirmed", "completed", "no-show", "cancelled"],
       default: "confirmed",
       index: true,
     },
@@ -40,6 +56,10 @@ const bookingSchema = new mongoose.Schema(
     topic: { type: String, default: "" },
     heard: { type: String, default: "" },
     oaf: { type: oafSchema, default: () => ({ status: "pending", data: null }) },
+    payment: {
+      type: paymentSchema,
+      default: () => ({ status: "not_required", amountCents: 0, currency: "aud" }),
+    },
     msgs: [messageSchema],
   },
   { timestamps: true }

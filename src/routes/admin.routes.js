@@ -31,6 +31,7 @@ router.delete("/leads/:id", asyncHandler(leads.remove));
 
 router.get("/bookings", asyncHandler(bookings.list));
 router.get("/bookings/comms", asyncHandler(bookings.comms));
+router.get("/bookings/payments", asyncHandler(bookings.paymentsReport));
 router.get("/bookings/:id", asyncHandler(bookings.getOne));
 router.post("/bookings", asyncHandler(bookings.create));
 router.patch("/bookings/:id", asyncHandler(bookings.update));

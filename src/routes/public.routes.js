@@ -29,6 +29,9 @@ router.get("/seo/:routeKey", seo.getPublicByRouteKey);
 router.get("/bookings/options", asyncHandler(bookings.publicOptions));
 router.get("/bookings/pending-oaf", bookingLimiter, asyncHandler(bookings.publicPendingOaf));
 router.post("/bookings", bookingLimiter, asyncHandler(bookings.publicCreate));
+router.post("/bookings/checkout", bookingLimiter, asyncHandler(bookings.publicCheckout));
+router.post("/bookings/confirm-payment", bookingLimiter, asyncHandler(bookings.publicConfirmPayment));
+router.post("/bookings/cancel-pending", bookingLimiter, asyncHandler(bookings.publicCancelPending));
 router.post("/bookings/oaf", bookingLimiter, asyncHandler(bookings.publicSubmitOaf));
 
 module.exports = router;

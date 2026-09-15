@@ -17,6 +17,7 @@ const {
   ftime,
 } = require("../services/runway.service");
 const { applyRmaRule } = require("../services/intake.service");
+const stripeService = require("../services/stripe.service");
 
 function enrichBooking(b) {
   const doc = b.toObject ? b.toObject() : { ...b };
@@ -24,6 +25,74 @@ function enrichBooking(b) {
     ...doc,
     id: doc._id?.toString?.() || doc.id,
     consultType: ctype(doc.type),
+    payment: doc.payment || { status: "not_required", amountCents: 0, currency: "aud" },
+  };
+}
+
+async function assertSlotFree(at) {
+  const clash = await Booking.findOne({
+    status: { $in: ["confirmed", "pending_payment"] },
+    at: {
+      $gte: new Date(at.getTime() - 29 * 60 * 1000),
+      $lte: new Date(at.getTime() + 29 * 60 * 1000),
+    },
+  });
+  if (clash) {
+    const err = new Error("That time was just taken — please pick another slot.");
+    err.status = 409;
+    throw err;
+  }
+}
+
+function validatePublicBookingBody(body) {
+  const name = String(body.name || "").trim();
+  const email = String(body.email || "").trim().toLowerCase();
+  const mobile = String(body.mobile || "").trim();
+  const typeId = String(body.type || "").trim();
+  const atRaw = body.at;
+
+  if (!name) {
+    const err = new Error("Please enter your full name.");
+    err.status = 400;
+    throw err;
+  }
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^\s@]+$/.test(email)) {
+    const err = new Error("Please enter a valid email address.");
+    err.status = 400;
+    throw err;
+  }
+  if (!typeId || !CONSULT_TYPES.some((t) => t.id === typeId)) {
+    const err = new Error("Please select a consultation type.");
+    err.status = 400;
+    throw err;
+  }
+  if (!atRaw) {
+    const err = new Error("Please pick a date and time.");
+    err.status = 400;
+    throw err;
+  }
+  const at = new Date(atRaw);
+  if (Number.isNaN(at.getTime()) || at.getTime() < Date.now() + 45 * 60 * 1000) {
+    const err = new Error("Please choose a future time slot.");
+    err.status = 400;
+    throw err;
+  }
+  if (body.vevo === false || body.vevo === "false") {
+    const err = new Error("Please accept the VEVO consent to continue.");
+    err.status = 400;
+    throw err;
+  }
+
+  return {
+    name,
+    email,
+    mobile,
+    typeId,
+    at,
+    office: body.office || "Truganina",
+    mode: body.mode === "Phone" ? "Phone" : "Video",
+    topic: String(body.topic || "").trim(),
+    heard: String(body.heard || "").trim(),
   };
 }
 
@@ -97,6 +166,9 @@ exports.list = async (req, res) => {
   );
   const completed = enriched.filter((b) => ["completed", "no-show"].includes(b.status));
   const noshows = completed.filter((b) => b.status === "no-show").length;
+  const paid = enriched.filter((b) => b.payment?.status === "paid");
+  const pendingPayment = enriched.filter((b) => b.status === "pending_payment");
+  const paidTotalCents = paid.reduce((s, b) => s + (b.payment?.amountCents || 0), 0);
 
   res.json({
     success: true,
@@ -105,8 +177,15 @@ exports.list = async (req, res) => {
       today,
       upcoming,
       past,
+      pendingPayment,
       remindersQueued,
       noShowRate: completed.length ? Math.round((noshows / completed.length) * 100) : null,
+      payments: {
+        paidCount: paid.length,
+        pendingCount: pendingPayment.length,
+        totalCents: paidTotalCents,
+        totalAud: paidTotalCents / 100,
+      },
       consultTypes: CONSULT_TYPES,
       offices: OFFICES,
       heard: HEARD,
@@ -333,7 +412,7 @@ exports.publicOptions = async (_req, res) => {
   const from = new Date(Date.now() - 60 * 60 * 1000);
   const to = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
   const taken = await Booking.find({
-    status: "confirmed",
+    status: { $in: ["confirmed", "pending_payment"] },
     at: { $gte: from, $lte: to },
   })
     .select("at")
@@ -350,71 +429,51 @@ exports.publicOptions = async (_req, res) => {
   });
 };
 
-/** Public self-serve booking — same create path, with validation + honeypot. */
+/** Public self-serve booking — free consults only (paid uses /checkout). */
 exports.publicCreate = async (req, res) => {
   const body = req.body || {};
   if (body.company_website) {
     return res.json({ success: true, data: { ok: true, skipped: true } });
   }
 
-  const name = String(body.name || "").trim();
-  const email = String(body.email || "").trim().toLowerCase();
-  const mobile = String(body.mobile || "").trim();
-  const typeId = String(body.type || "").trim();
-  const atRaw = body.at;
-
-  if (!name) {
-    return res.status(400).json({ success: false, message: "Please enter your full name." });
-  }
-  if (!email || !/^[^@\s]+@[^@\s]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ success: false, message: "Please enter a valid email address." });
-  }
-  if (!typeId || !CONSULT_TYPES.some((t) => t.id === typeId)) {
-    return res.status(400).json({ success: false, message: "Please select a consultation type." });
-  }
-  if (!atRaw) {
-    return res.status(400).json({ success: false, message: "Please pick a date and time." });
-  }
-  const at = new Date(atRaw);
-  if (Number.isNaN(at.getTime()) || at.getTime() < Date.now() + 45 * 60 * 1000) {
-    return res.status(400).json({ success: false, message: "Please choose a future time slot." });
-  }
-  if (body.vevo === false || body.vevo === "false") {
-    return res.status(400).json({ success: false, message: "Please accept the VEVO consent to continue." });
+  let parsed;
+  try {
+    parsed = validatePublicBookingBody(body);
+    await assertSlotFree(parsed.at);
+  } catch (e) {
+    return res.status(e.status || 400).json({ success: false, message: e.message });
   }
 
-  const clash = await Booking.findOne({
-    status: "confirmed",
-    at: {
-      $gte: new Date(at.getTime() - 29 * 60 * 1000),
-      $lte: new Date(at.getTime() + 29 * 60 * 1000),
-    },
-  });
-  if (clash) {
-    return res.status(409).json({ success: false, message: "That time was just taken — please pick another slot." });
+  const t = ctype(parsed.typeId);
+  if (t.fee > 0) {
+    return res.status(400).json({
+      success: false,
+      message: "This consultation requires payment. Please use the checkout flow.",
+    });
   }
 
-  const t = ctype(typeId);
   const booking = await Booking.create({
-    name,
-    email,
-    mobile,
-    type: typeId,
-    office: body.office || "Truganina",
-    mode: body.mode === "Phone" ? "Phone" : "Video",
-    at,
-    topic: String(body.topic || "").trim(),
-    heard: String(body.heard || "").trim(),
+    name: parsed.name,
+    email: parsed.email,
+    mobile: parsed.mobile,
+    type: parsed.typeId,
+    office: parsed.office,
+    mode: parsed.mode,
+    at: parsed.at,
+    topic: parsed.topic,
+    heard: parsed.heard,
     vevo: true,
-    oaf: { status: t.fee > 0 ? "pending" : "optional", data: null },
+    status: "confirmed",
+    payment: { status: "not_required", amountCents: 0, currency: "aud" },
+    oaf: { status: "optional", data: null },
     msgs: buildBookingMessages({
-      name,
-      email,
-      mobile,
-      type: typeId,
-      office: body.office || "Truganina",
-      mode: body.mode === "Phone" ? "Phone" : "Video",
-      at: at.toISOString(),
+      name: parsed.name,
+      email: parsed.email,
+      mobile: parsed.mobile,
+      type: parsed.typeId,
+      office: parsed.office,
+      mode: parsed.mode,
+      at: parsed.at.toISOString(),
     }),
   });
   await bookingToLead(booking);
@@ -428,7 +487,210 @@ exports.publicCreate = async (req, res) => {
       mode: booking.mode,
       office: booking.office,
       consultType: t,
+      payment: booking.payment,
       ok: true,
     },
   });
 };
+
+/** Paid consult: create pending booking + Stripe Checkout Session. */
+exports.publicCheckout = async (req, res) => {
+  const body = req.body || {};
+  if (body.company_website) {
+    return res.json({ success: true, data: { ok: true, skipped: true } });
+  }
+
+  let parsed;
+  try {
+    parsed = validatePublicBookingBody(body);
+    await assertSlotFree(parsed.at);
+  } catch (e) {
+    return res.status(e.status || 400).json({ success: false, message: e.message });
+  }
+
+  const t = ctype(parsed.typeId);
+  if (!t.fee || t.fee <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: "This consultation is free — book without payment.",
+    });
+  }
+
+  const amountCents = Math.round(Number(t.fee) * 100);
+  const booking = await Booking.create({
+    name: parsed.name,
+    email: parsed.email,
+    mobile: parsed.mobile,
+    type: parsed.typeId,
+    office: parsed.office,
+    mode: parsed.mode,
+    at: parsed.at,
+    topic: parsed.topic,
+    heard: parsed.heard,
+    vevo: true,
+    status: "pending_payment",
+    payment: {
+      status: "pending",
+      amountCents,
+      currency: "aud",
+    },
+    oaf: { status: "pending", data: null },
+    msgs: [],
+  });
+
+  try {
+    const session = await stripeService.createConsultCheckoutSession({
+      req,
+      bookingId: booking._id.toString(),
+      amountCents,
+      consultName: t.name,
+      customerEmail: parsed.email,
+      customerName: parsed.name,
+    });
+    booking.payment.stripeSessionId = session.id;
+    await booking.save();
+
+    res.status(201).json({
+      success: true,
+      data: {
+        ok: true,
+        bookingId: booking._id.toString(),
+        sessionId: session.id,
+        url: session.url,
+        amountCents,
+        consultType: t,
+      },
+    });
+  } catch (e) {
+    booking.status = "cancelled";
+    booking.payment.status = "failed";
+    await booking.save();
+    return res.status(e.status || 502).json({
+      success: false,
+      message: e.message || "Could not start payment. Please try again.",
+    });
+  }
+};
+
+/** After Stripe redirect — verify session and confirm booking. */
+exports.publicConfirmPayment = async (req, res) => {
+  const sessionId = String(req.body?.sessionId || req.query?.session_id || "").trim();
+  if (!sessionId) {
+    return res.status(400).json({ success: false, message: "Missing Stripe session id." });
+  }
+
+  let session;
+  try {
+    session = await stripeService.retrieveCheckoutSession(sessionId);
+  } catch (e) {
+    return res.status(502).json({ success: false, message: e.message || "Could not verify payment." });
+  }
+
+  const bookingId = session.client_reference_id || session.metadata?.bookingId;
+  if (!bookingId) {
+    return res.status(400).json({ success: false, message: "Payment session is missing booking reference." });
+  }
+
+  const booking = await Booking.findById(bookingId);
+  if (!booking) {
+    return res.status(404).json({ success: false, message: "Booking not found." });
+  }
+
+  if (session.payment_status === "paid" || session.status === "complete") {
+    if (booking.status !== "confirmed") {
+      booking.status = "confirmed";
+      booking.payment = booking.payment || {};
+      booking.payment.status = "paid";
+      booking.payment.stripeSessionId = session.id;
+      booking.payment.stripePaymentIntentId =
+        typeof session.payment_intent === "string"
+          ? session.payment_intent
+          : session.payment_intent?.id || "";
+      booking.payment.paidAt = new Date();
+      booking.payment.amountCents = session.amount_total || booking.payment.amountCents || 0;
+      if (!booking.msgs?.length) {
+        booking.msgs = buildBookingMessages({
+          name: booking.name,
+          email: booking.email,
+          mobile: booking.mobile,
+          type: booking.type,
+          office: booking.office,
+          mode: booking.mode,
+          at: new Date(booking.at).toISOString(),
+        });
+      }
+      await booking.save();
+      if (!booking.leadId) await bookingToLead(booking);
+    }
+
+    const t = ctype(booking.type);
+    return res.json({
+      success: true,
+      data: {
+        ok: true,
+        paid: true,
+        id: booking._id.toString(),
+        at: booking.at,
+        type: booking.type,
+        mode: booking.mode,
+        office: booking.office,
+        name: booking.name,
+        consultType: t,
+        payment: booking.payment,
+      },
+    });
+  }
+
+  if (session.status === "expired") {
+    booking.status = "cancelled";
+    booking.payment.status = "cancelled";
+    await booking.save();
+  }
+
+  return res.status(402).json({
+    success: false,
+    message: "Payment not completed yet.",
+    data: { paymentStatus: session.payment_status, sessionStatus: session.status },
+  });
+};
+
+/** Cancel a pending Stripe booking (user abandoned checkout). */
+exports.publicCancelPending = async (req, res) => {
+  const bookingId = String(req.body?.bookingId || "").trim();
+  if (!bookingId) {
+    return res.status(400).json({ success: false, message: "Missing booking id." });
+  }
+  const booking = await Booking.findById(bookingId);
+  if (!booking) {
+    return res.status(404).json({ success: false, message: "Booking not found." });
+  }
+  if (booking.status === "pending_payment") {
+    booking.status = "cancelled";
+    booking.payment.status = "cancelled";
+    await booking.save();
+  }
+  res.json({ success: true, data: { ok: true } });
+};
+
+/** Admin: paid consultation payments list + totals. */
+exports.paymentsReport = async (_req, res) => {
+  const paid = await Booking.find({ "payment.status": "paid" }).sort({ "payment.paidAt": -1 }).lean();
+  const pending = await Booking.countDocuments({ status: "pending_payment", "payment.status": "pending" });
+  const totalCents = paid.reduce((sum, b) => sum + (b.payment?.amountCents || 0), 0);
+  res.json({
+    success: true,
+    data: {
+      kpis: {
+        paidCount: paid.length,
+        pendingCount: pending,
+        totalCents,
+        totalAud: Math.round(totalCents) / 100,
+      },
+      payments: paid.map((b) => ({
+        ...enrichBooking(b),
+        amountAud: (b.payment?.amountCents || 0) / 100,
+      })),
+    },
+  });
+};
+
