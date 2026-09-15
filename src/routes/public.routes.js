@@ -6,11 +6,14 @@ const news = require("../controllers/news.controller");
 const faq = require("../controllers/faq.controller");
 const seo = require("../controllers/seo.controller");
 const bookings = require("../controllers/bookings.controller");
+const governance = require("../controllers/governance.controller");
+const refund = require("../controllers/refund.controller");
 const { asyncHandler } = require("../middleware/asyncHandler");
 
 const router = express.Router();
 
 const bookingLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 40 });
+const formLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30 });
 
 router.get("/site-content", siteContent.getPublicHomepage);
 
@@ -33,5 +36,8 @@ router.post("/bookings/checkout", bookingLimiter, asyncHandler(bookings.publicCh
 router.post("/bookings/confirm-payment", bookingLimiter, asyncHandler(bookings.publicConfirmPayment));
 router.post("/bookings/cancel-pending", bookingLimiter, asyncHandler(bookings.publicCancelPending));
 router.post("/bookings/oaf", bookingLimiter, asyncHandler(bookings.publicSubmitOaf));
+
+router.post("/governance", formLimiter, asyncHandler(governance.publicCreate));
+router.post("/refund-requests", formLimiter, asyncHandler(refund.publicCreate));
 
 module.exports = router;

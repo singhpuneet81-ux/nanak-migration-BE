@@ -10,6 +10,8 @@ const news = require("../controllers/news.controller");
 const faq = require("../controllers/faq.controller");
 const seo = require("../controllers/seo.controller");
 const contentSync = require("../controllers/contentSync.controller");
+const governance = require("../controllers/governance.controller");
+const refund = require("../controllers/refund.controller");
 
 const router = express.Router();
 router.use(protect);
@@ -54,6 +56,14 @@ router.post("/compliance", asyncHandler(ops.createCompliance));
 router.patch("/compliance/:id", asyncHandler(ops.updateCompliance));
 
 router.get("/reports", asyncHandler(ops.reports));
+
+router.get("/governance-tickets", asyncHandler(governance.list));
+router.get("/governance-tickets/:id", asyncHandler(governance.getOne));
+router.patch("/governance-tickets/:id", asyncHandler(governance.update));
+
+router.get("/refund-requests", asyncHandler(refund.list));
+router.get("/refund-requests/:id", asyncHandler(refund.getOne));
+router.patch("/refund-requests/:id", asyncHandler(refund.update));
 
 router.get("/site-content", asyncHandler(siteContent.getAdminHomepage));
 router.patch("/site-content", asyncHandler(siteContent.updateHomepage));
