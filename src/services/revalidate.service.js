@@ -2,7 +2,7 @@
  * Ask the public Next.js site to purge cached FAQ (and other tagged) data.
  * Requires REVALIDATE_SECRET and PUBLIC_SITE_URL on the API server.
  */
-async function triggerSiteRevalidate(tags = ["faqs"]) {
+async function triggerSiteRevalidate(tags = ["faqs"], paths = []) {
   const secret = process.env.REVALIDATE_SECRET;
   const base = (process.env.PUBLIC_SITE_URL || "https://www.nanakmigration.com.au").replace(/\/$/, "");
   if (!secret) {
@@ -10,7 +10,8 @@ async function triggerSiteRevalidate(tags = ["faqs"]) {
     return { ok: false, reason: "no-secret" };
   }
 
-  const unique = [...new Set(tags.filter(Boolean))];
+  const uniqueTags = [...new Set(tags.filter(Boolean))];
+  const uniquePaths = [...new Set(paths.filter((p) => typeof p === "string" && p.startsWith("/")))];
   try {
     const res = await fetch(`${base}/api/revalidate`, {
       method: "POST",
@@ -18,7 +19,7 @@ async function triggerSiteRevalidate(tags = ["faqs"]) {
         "Content-Type": "application/json",
         "x-revalidate-secret": secret,
       },
-      body: JSON.stringify({ tags: unique }),
+      body: JSON.stringify({ tags: uniqueTags, paths: uniquePaths }),
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
